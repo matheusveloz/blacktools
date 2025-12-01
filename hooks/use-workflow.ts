@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 import { useWorkflowStore } from '@/stores/workflow-store'
 import { WorkflowNode, Connection } from '@/types/workflow'
 import { NodeType, ToolType, TOOL_CONFIG } from '@/lib/constants'
-import { v4 as uuidv4 } from 'crypto'
 
 function generateId() {
   return Math.random().toString(36).substring(2, 15)
