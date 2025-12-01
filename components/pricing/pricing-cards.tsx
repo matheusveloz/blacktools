@@ -90,7 +90,7 @@ export function PricingCards({ userId, userEmail }: PricingCardsProps) {
               <span className="text-muted-foreground text-sm"> / month</span>
             </div>
             <ul className="space-y-3">
-              {plan.features.map((feature, index) => (
+              {plan.features.map((feature: string, index: number) => (
                 <li key={index} className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                   <span className="text-sm text-muted-foreground">{feature}</span>
