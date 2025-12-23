@@ -1,6 +1,19 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { WorkflowStore, WorkflowNode, Connection, Position } from '@/types/workflow'
 import { ToolType } from '@/lib/constants'
+
+interface SavedWorkflow {
+  nodes: WorkflowNode[]
+  connections: Connection[]
+  zoom: number
+  pan: Position
+}
+
+interface ExtendedWorkflowStore extends WorkflowStore {
+  savedWorkflows: Record<string, SavedWorkflow>
+  switchTool: (tool: ToolType) => void
+}
 
 const initialState = {
   nodes: [] as WorkflowNode[],
@@ -10,12 +23,58 @@ const initialState = {
   zoom: 1,
   pan: { x: 0, y: 0 } as Position,
   isRunning: false,
+  savedWorkflows: {} as Record<string, SavedWorkflow>,
 }
 
-export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
+export const useWorkflowStore = create<ExtendedWorkflowStore>()(
+  persist(
+    (set, get) => ({
   ...initialState,
 
   setSelectedTool: (tool) => set({ selectedTool: tool }),
+
+  switchTool: (tool) => {
+    const state = get()
+    const currentTool = state.selectedTool
+
+    // Save current workflow if there's a tool selected
+    if (currentTool) {
+      const currentWorkflow: SavedWorkflow = {
+        nodes: state.nodes,
+        connections: state.connections,
+        zoom: state.zoom,
+        pan: state.pan,
+      }
+      set((s) => ({
+        savedWorkflows: {
+          ...s.savedWorkflows,
+          [currentTool]: currentWorkflow,
+        },
+      }))
+    }
+
+    // Load saved workflow for new tool or start fresh
+    const savedWorkflow = state.savedWorkflows[tool]
+    if (savedWorkflow) {
+      set({
+        selectedTool: tool,
+        nodes: savedWorkflow.nodes,
+        connections: savedWorkflow.connections,
+        zoom: savedWorkflow.zoom,
+        pan: savedWorkflow.pan,
+        selectedNodeId: null,
+      })
+    } else {
+      set({
+        selectedTool: tool,
+        nodes: [],
+        connections: [],
+        zoom: 1,
+        pan: { x: 0, y: 0 },
+        selectedNodeId: null,
+      })
+    }
+  },
 
   addNode: (node) =>
     set((state) => ({
@@ -71,6 +130,8 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
       nodes: [],
       connections: [],
       selectedNodeId: null,
+      zoom: 1,
+      pan: { x: 0, y: 0 },
     }),
 
   loadWorkflow: (nodes, connections) =>
@@ -79,4 +140,61 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
       connections,
       selectedNodeId: null,
     }),
-}))
+    }),
+    {
+      name: 'blacktools-workflow',
+      partialize: (state) => {
+        // Helper to clean base64 data from node data (too large for localStorage)
+        const cleanNodeData = (node: WorkflowNode): WorkflowNode => {
+          const cleanedData = { ...node.data }
+
+          // Remove base64 data URLs (they start with "data:")
+          if (typeof cleanedData.videoUrl === 'string' && cleanedData.videoUrl.startsWith('data:')) {
+            delete cleanedData.videoUrl
+            delete cleanedData.fileName
+            cleanedData.filled = false
+          }
+          if (typeof cleanedData.audioUrl === 'string' && cleanedData.audioUrl.startsWith('data:')) {
+            delete cleanedData.audioUrl
+            delete cleanedData.fileName
+            delete cleanedData.audioDuration
+            cleanedData.filled = false
+          }
+          // Only remove base64 images, keep Supabase Storage URLs
+          if (typeof cleanedData.imageUrl === 'string') {
+            if (cleanedData.imageUrl.startsWith('data:')) {
+              delete cleanedData.imageUrl
+              delete cleanedData.fileName
+              cleanedData.filled = false
+            }
+            // Keep URLs that are from Supabase Storage (they contain supabase.co)
+          }
+
+          return { ...node, data: cleanedData }
+        }
+
+        // Clean nodes in current state
+        const cleanedNodes = state.nodes.map(cleanNodeData)
+
+        // Clean nodes in saved workflows
+        const cleanedSavedWorkflows: Record<string, SavedWorkflow> = {}
+        for (const [tool, workflow] of Object.entries(state.savedWorkflows)) {
+          cleanedSavedWorkflows[tool] = {
+            ...workflow,
+            nodes: workflow.nodes.map(cleanNodeData),
+          }
+        }
+
+        return {
+          nodes: cleanedNodes,
+          connections: state.connections,
+          selectedTool: state.selectedTool,
+          zoom: state.zoom,
+          pan: state.pan,
+          savedWorkflows: cleanedSavedWorkflows,
+        }
+      },
+      skipHydration: true,
+    }
+  )
+)

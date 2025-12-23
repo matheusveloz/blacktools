@@ -52,19 +52,14 @@ export function Hero() {
       {/* Header */}
       <header className="border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold">BlackTools</span>
-            </div>
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <span className="text-lg sm:text-xl font-semibold">blacktools<span className="text-muted-foreground">.ai</span></span>
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
+                <Button variant="ghost" size="sm" className="text-xs sm:text-sm">Sign In</Button>
               </Link>
               <Link href="/signup">
-                <Button>Get Started</Button>
+                <Button size="sm" className="text-xs sm:text-sm">Get Started</Button>
               </Link>
             </div>
           </div>
@@ -72,15 +67,15 @@ export function Hero() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-16 md:py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-8">
-              <Sparkles className="h-4 w-4" />
+            <span className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-6 sm:mb-8">
+              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               AI-Powered Video Generation
             </span>
           </motion.div>
@@ -89,7 +84,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
+            className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 sm:mb-6"
           >
             Create Stunning Videos
             <br />
@@ -100,7 +95,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 px-2"
           >
             Harness the power of Sora 2, Veo 3, LipSync, and Avatar generation.
             Build complex video workflows with our visual node editor.
@@ -110,16 +105,16 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex items-center justify-center gap-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
           >
-            <Link href="/signup">
-              <Button size="lg" className="gap-2">
+            <Link href="/signup" className="w-full sm:w-auto">
+              <Button size="lg" className="gap-2 w-full sm:w-auto">
                 Start Free Trial
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/pricing">
-              <Button size="lg" variant="outline">
+            <Link href="/pricing" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
                 View Pricing
               </Button>
             </Link>
@@ -128,23 +123,23 @@ export function Hero() {
       </section>
 
       {/* Benefits */}
-      <section className="py-12 border-t border-b bg-card/50">
+      <section className="py-8 sm:py-12 border-t border-b bg-card/50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {benefits.map((benefit, index) => (
               <motion.div
                 key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                className="flex items-center gap-4"
+                className="flex items-center gap-3 sm:gap-4"
               >
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
                   {benefit.icon}
                 </div>
-                <div>
-                  <h3 className="font-semibold">{benefit.title}</h3>
-                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-sm sm:text-base">{benefit.title}</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{benefit.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -153,31 +148,31 @@ export function Hero() {
       </section>
 
       {/* Features */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-16 md:py-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               Powerful AI Tools
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-2">
               Everything you need to create professional videos with artificial intelligence
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                className="bg-card border rounded-xl p-6 hover:border-primary transition-colors"
+                className="bg-card border rounded-xl p-4 sm:p-5 md:p-6 hover:border-primary transition-colors"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary mb-3 sm:mb-4">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="text-base sm:text-lg font-semibold mb-1.5 sm:mb-2">{feature.title}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -185,17 +180,17 @@ export function Hero() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-primary/5">
+      <section className="py-12 sm:py-16 md:py-20 px-4 bg-primary/5">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
             Ready to Get Started?
           </h2>
-          <p className="text-muted-foreground mb-8">
-            Join thousands of creators using BlackTools to generate amazing AI videos.
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 px-2">
+            Join thousands of creators using blacktools.ai to generate amazing AI videos.
             Start your 1-day free trial today.
           </p>
           <Link href="/signup">
-            <Button size="lg" className="gap-2">
+            <Button size="lg" className="gap-2 w-full sm:w-auto">
               Create Free Account
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -204,16 +199,11 @@ export function Hero() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="font-semibold">BlackTools</span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} BlackTools. All rights reserved.
+      <footer className="border-t py-6 sm:py-8 px-4">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+          <span className="font-semibold text-sm sm:text-base">blacktools<span className="text-muted-foreground">.ai</span></span>
+          <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
+            &copy; {new Date().getFullYear()} blacktools.ai. All rights reserved.
           </p>
         </div>
       </footer>

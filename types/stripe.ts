@@ -3,6 +3,7 @@ export interface Plan {
   price: number
   credits: number
   features: string[]
+  excludedFeatures?: string[]
 }
 
 export interface Plans {

@@ -1,6 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 
@@ -11,28 +10,34 @@ export function OAuthButtons() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
+      // Usar a URL base do site (não o custom auth domain)
+      const siteUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${siteUrl}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       })
       if (error) throw error
     } catch (error) {
-      console.error('Error signing in with Google:', error)
+      // Silent fail
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <Button
-      variant="outline"
-      className="w-full"
+    <button
+      type="button"
       onClick={handleGoogleSignIn}
       disabled={isLoading}
+      className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3"
     >
-      <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+      <svg className="w-5 h-5" viewBox="0 0 24 24">
         <path
           fill="currentColor"
           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -51,6 +56,6 @@ export function OAuthButtons() {
         />
       </svg>
       {isLoading ? 'Connecting...' : 'Continue with Google'}
-    </Button>
+    </button>
   )
 }

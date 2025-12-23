@@ -1,25 +1,79 @@
 'use client'
 
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useWorkflow } from '@/hooks/use-workflow'
+import { useConnectionStore } from '@/stores/connection-store'
+import { useWorkflowStore } from '@/stores/workflow-store'
 
 interface NodeConnectionsProps {
   containerRef: React.RefObject<HTMLDivElement>
 }
 
 export function NodeConnections({ containerRef }: NodeConnectionsProps) {
-  const { nodes, connections, removeConnection } = useWorkflow()
+  const { nodes, connections, removeConnection, selectedTool } = useWorkflow()
+  const dragConnection = useConnectionStore((s) => s.dragConnection)
+  const [updateTick, setUpdateTick] = useState(0)
+  const prevToolRef = useRef(selectedTool)
 
-  const getNodeCenter = (nodeId: string, port: 'input' | 'output') => {
+  // Force re-render when tool changes to recalculate positions
+  useEffect(() => {
+    if (prevToolRef.current !== selectedTool) {
+      prevToolRef.current = selectedTool
+      // Wait for DOM to update after tool change
+      const timeout = setTimeout(() => {
+        setUpdateTick(t => t + 1)
+      }, 100)
+      return () => clearTimeout(timeout)
+    }
+  }, [selectedTool])
+
+  // Force re-render continuously to keep connections in sync with node positions
+  useEffect(() => {
+    let animationId: number
+
+    const updateConnections = () => {
+      setUpdateTick(t => t + 1)
+      animationId = requestAnimationFrame(updateConnections)
+    }
+
+    // Start the animation loop
+    animationId = requestAnimationFrame(updateConnections)
+
+    return () => {
+      cancelAnimationFrame(animationId)
+    }
+  }, [selectedTool]) // Re-start animation loop when tool changes
+
+  const getPortPosition = useCallback((nodeId: string, portType: 'input' | 'output') => {
+    // First check if the node exists in current state
     const node = nodes.find((n) => n.id === nodeId)
     if (!node) return null
 
-    // Node width is 200px, ports are at -8px (input) or 208px (output) from left
-    const portOffset = port === 'input' ? 0 : 200
-    const x = node.position.x + portOffset
-    const y = node.position.y + 60 // Approximate center height
+    // Try to get the actual port element position
+    const portElement = document.querySelector(
+      `.port.${portType}[data-node-id="${nodeId}"]`
+    ) as HTMLElement
+
+    if (portElement && containerRef.current) {
+      const portRect = portElement.getBoundingClientRect()
+      const containerRect = containerRef.current.getBoundingClientRect()
+      const { zoom } = useWorkflowStore.getState()
+
+      // Validate rects are valid (not 0,0 which happens during DOM updates)
+      if (portRect.width > 0 && portRect.height > 0) {
+        // Calculate position relative to canvas, accounting for zoom
+        const x = (portRect.left + portRect.width / 2 - containerRect.left) / zoom
+        const y = (portRect.top + portRect.height / 2 - containerRect.top) / zoom
+        return { x, y }
+      }
+    }
+
+    // Fallback: calculate based on node position
+    const x = node.position.x + (portType === 'output' ? 240 : 0)
+    const y = node.position.y + 60
 
     return { x, y }
-  }
+  }, [nodes, containerRef])
 
   const createBezierPath = (
     x1: number,
@@ -27,15 +81,16 @@ export function NodeConnections({ containerRef }: NodeConnectionsProps) {
     x2: number,
     y2: number
   ) => {
-    const midX = (x1 + x2) / 2
-    return `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`
+    const controlOffset = Math.min(Math.abs(x2 - x1) * 0.5, 150)
+    return `M ${x1} ${y1} C ${x1 + controlOffset} ${y1}, ${x2 - controlOffset} ${y2}, ${x2} ${y2}`
   }
 
   return (
     <svg className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible' }}>
+      {/* Existing connections */}
       {connections.map((connection) => {
-        const sourcePos = getNodeCenter(connection.sourceNodeId, 'output')
-        const targetPos = getNodeCenter(connection.targetNodeId, 'input')
+        const sourcePos = getPortPosition(connection.sourceNodeId, 'output')
+        const targetPos = getPortPosition(connection.targetNodeId, 'input')
 
         if (!sourcePos || !targetPos) return null
 
@@ -74,6 +129,20 @@ export function NodeConnections({ containerRef }: NodeConnectionsProps) {
           </g>
         )
       })}
+
+      {/* Drag preview line */}
+      {dragConnection && (
+        <path
+          d={createBezierPath(
+            dragConnection.startX,
+            dragConnection.startY,
+            dragConnection.currentX,
+            dragConnection.currentY
+          )}
+          className="connection-line-preview"
+          strokeLinecap="round"
+        />
+      )}
     </svg>
   )
 }

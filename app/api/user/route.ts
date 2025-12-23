@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimiters, checkRateLimit } from '@/lib/rate-limit'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
@@ -10,6 +13,25 @@ export async function GET() {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      )
+    }
+
+    // Rate limiting
+    const rateLimit = await checkRateLimit(rateLimiters.general, user.id)
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests. Please wait before trying again.',
+          retryAfter: Math.ceil((rateLimit.reset - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+            'Retry-After': Math.ceil((rateLimit.reset - Date.now()) / 1000).toString()
+          }
+        }
       )
     }
 
@@ -28,7 +50,6 @@ export async function GET() {
 
     return NextResponse.json({ user, profile })
   } catch (error) {
-    console.error('Error fetching user:', error)
     return NextResponse.json(
       { error: 'Failed to fetch user' },
       { status: 500 }

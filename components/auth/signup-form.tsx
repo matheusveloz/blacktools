@@ -7,11 +7,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { OAuthButtons } from './oauth-buttons'
 import { toast } from 'sonner'
 
@@ -59,10 +54,10 @@ export function SignupForm() {
         return
       }
 
-      toast.success('Account created! Redirecting to pricing...')
+      toast.success('Account created! You received 50 free credits! 🎉')
       router.push('/pricing')
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
@@ -70,87 +65,111 @@ export function SignupForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
-        <CardDescription className="text-center">
-          Get started with BlackTools today
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <OAuthButtons />
+    <div className="w-full max-w-md">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <Link href="/" className="inline-block text-2xl font-medium tracking-tight mb-8">
+          blacktools<span className="text-neutral-500">.ai</span>
+        </Link>
+        <h1 className="text-3xl font-medium tracking-tight mb-2">Create an account</h1>
+        <p className="text-neutral-500">Get started with blacktools.ai today</p>
+      </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <Separator />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-          </div>
+      {/* OAuth */}
+      <OAuthButtons />
+
+      {/* Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-[#050505] px-4 text-neutral-500">Or continue with</span>
+        </div>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="fullName" className="block text-sm font-medium text-neutral-300">
+            Full Name
+          </label>
+          <input
+            id="fullName"
+            type="text"
+            placeholder="John Doe"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
+            {...register('fullName')}
+          />
+          {errors.fullName && (
+            <p className="text-sm text-red-400">{errors.fullName.message}</p>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
-            <Input
-              id="fullName"
-              type="text"
-              placeholder="John Doe"
-              {...register('fullName')}
-            />
-            {errors.fullName && (
-              <p className="text-sm text-destructive">{errors.fullName.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@example.com"
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Create a password"
-              {...register('password')}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              {...register('confirmPassword')}
-            />
-            {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-            )}
-          </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create account'}
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <div className="text-sm text-muted-foreground text-center">
-          Already have an account?{' '}
-          <Link href="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-neutral-300">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="name@example.com"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-400">{errors.email.message}</p>
+          )}
         </div>
-      </CardFooter>
-    </Card>
+
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-medium text-neutral-300">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Create a password"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
+            {...register('password')}
+          />
+          {errors.password && (
+            <p className="text-sm text-red-400">{errors.password.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-300">
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
+            {...register('confirmPassword')}
+          />
+          {errors.confirmPassword && (
+            <p className="text-sm text-red-400">{errors.confirmPassword.message}</p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-3 px-4 rounded-xl bg-white text-black font-medium hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+        >
+          {isLoading ? 'Creating account...' : 'Create account'}
+        </button>
+      </form>
+
+      {/* Footer */}
+      <p className="mt-8 text-center text-sm text-neutral-500">
+        Already have an account?{' '}
+        <Link href="/login" className="text-white hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </div>
   )
 }

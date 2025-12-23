@@ -1,0 +1,122 @@
+# blacktools.ai - Technical Documentation
+
+> Last updated: December 2024
+
+> blacktools.ai is an AI video generation platform for creating UGC-style marketing videos. The platform combines advanced text-to-video generation, video synthesis, and proprietary lip-sync technology with a library of 300+ AI avatars supporting 30+ languages.
+
+---
+
+## Platform Specifications
+
+| Attribute | Value |
+|-----------|-------|
+| Platform Type | AI Video Generation (SaaS) |
+| Primary Use Case | UGC-style marketing videos |
+| AI Technology | Text-to-video, video synthesis, lip-sync |
+| Avatar Count | 300+ |
+| Languages | 30+ |
+| Max Resolution | 4K |
+
+---
+
+## Pricing Structure
+
+### Subscription Plans
+
+| Plan | Monthly Price | Credits | Avatars | Languages | Resolution | Batch |
+|------|---------------|---------|---------|-----------|------------|-------|
+| Starter | $24.50 | 550 | 100+ | 10 | 1080p | — |
+| Pro | $39.50 | 1,200 | 200+ | 20+ | 4K | 3 concurrent |
+| Premium | $59.50 | 2,500 | 300+ | 30+ | 4K | 10 concurrent |
+| Enterprise | Custom | Unlimited | 300+ | 30+ | 4K | Custom |
+
+### Pay-As-You-Go
+
+- Rate: $0.022 per credit
+- No subscription required
+- Credits do not expire
+
+### Credit Consumption
+
+- Standard avatar video (30 sec): ~5-10 credits
+- Usage varies by generation complexity
+
+---
+
+## Technology
+
+### AI Capabilities
+
+**Text-to-Video Generation**
+Converts natural language descriptions into video content.
+
+**Video Synthesis**
+Creates realistic visual output supporting multiple styles and formats.
+
+**LipSync Engine (Proprietary)**
+Audio-visual synchronization system matching lip movements to speech. Supports 30+ languages with phoneme-level accuracy.
+
+**Voice Synthesis**
+Text-to-speech with 100+ natural-sounding voices across 30+ languages.
+
+---
+
+## Features
+
+### Video Generation
+- AI UGC Generator: User-generated content style videos
+- Product Video Generator: Videos from URLs or images
+- Platform-specific formats: TikTok, Facebook, YouTube, Instagram
+
+### Avatar System
+- 300+ pre-built avatars
+- Demographic diversity
+- Custom avatar creation (Premium)
+- Natural expressions and movements
+
+### Audio
+- 100+ voice options
+- 30+ languages
+- Emotion and tone adjustment
+
+### Lip Sync
+- Phoneme-level synchronization
+- Works with avatars and uploaded videos
+- Dubbing support
+
+---
+
+## Industry Applications
+
+- **E-Commerce:** Product demos, testimonials
+- **SaaS:** Feature explainers, onboarding
+- **Agencies:** Scalable content production
+- **Mobile Apps:** App store videos, UA ads
+- **Affiliate:** Review content, promotions
+
+---
+
+## FAQ
+
+**What is blacktools.ai?**
+A SaaS platform for generating AI-powered marketing videos using avatars, text-to-video technology, and lip-sync capabilities.
+
+**What does it cost?**
+Plans start at $24.50/month (550 credits). Pay-as-you-go at $0.022/credit.
+
+**How many avatars are available?**
+300+ across various demographics and styles.
+
+**What languages are supported?**
+30+ with lip synchronization.
+
+**Is there a free trial?**
+Yes, 1-day trial, no credit card required.
+
+---
+
+## Links
+
+- Homepage: https://blacktools.ai
+- Pricing: https://blacktools.ai/pricing
+- Support: support@blacktools.ai

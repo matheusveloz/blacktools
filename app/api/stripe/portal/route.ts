@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe/client'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { rateLimiters, checkRateLimit } from '@/lib/rate-limit'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST() {
   try {
     const supabase = createClient()
+    const adminClient = createAdminClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
@@ -14,7 +18,26 @@ export async function POST() {
       )
     }
 
-    const { data: profile } = await supabase
+    // Rate limiting
+    const rateLimit = await checkRateLimit(rateLimiters.general, user.id)
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests. Please wait before trying again.',
+          retryAfter: Math.ceil((rateLimit.reset - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+            'Retry-After': Math.ceil((rateLimit.reset - Date.now()) / 1000).toString()
+          }
+        }
+      )
+    }
+
+    const { data: profile } = await adminClient
       .from('profiles')
       .select('stripe_customer_id')
       .eq('id', user.id)
@@ -34,7 +57,6 @@ export async function POST() {
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
-    console.error('Error creating portal session:', error)
     return NextResponse.json(
       { error: 'Failed to create portal session' },
       { status: 500 }
