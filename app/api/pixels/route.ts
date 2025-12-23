@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server'
 import { createClient as createSupabaseJsClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-// GET - Get active pixels for client-side injection (public)
+// GET - Get active pixels for client-side injection (public) - v2
 export async function GET() {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
