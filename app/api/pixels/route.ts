@@ -4,30 +4,16 @@ import { createClient as createSupabaseJsClient } from '@supabase/supabase-js'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// GET - Get active pixels for client-side injection (public) - v2
+// GET - Get active pixels for client-side injection (public)
 export async function GET() {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    // Debug: Check if environment variables are set
     if (!supabaseUrl || !serviceRoleKey) {
-      console.error('[Pixels API] Missing env vars:', {
-        hasUrl: !!supabaseUrl,
-        hasServiceKey: !!serviceRoleKey,
-        serviceKeyLength: serviceRoleKey?.length || 0
-      })
-      return NextResponse.json({
-        pixels: [],
-        debug: {
-          error: 'Missing environment variables',
-          hasUrl: !!supabaseUrl,
-          hasServiceKey: !!serviceRoleKey
-        }
-      })
+      return NextResponse.json({ pixels: [] })
     }
 
-    // Create admin client directly here to ensure it works
     const adminClient = createSupabaseJsClient(
       supabaseUrl,
       serviceRoleKey,
@@ -45,22 +31,13 @@ export async function GET() {
       .eq('is_active', true)
 
     if (error) {
-      console.error('[Pixels API] Query error:', error)
-      return NextResponse.json({
-        pixels: [],
-        debug: { queryError: error.message, code: error.code }
-      })
+      console.error('Error fetching pixels:', error)
+      return NextResponse.json({ pixels: [] })
     }
 
-    // Only return type and pixel_id (not access_token for security)
-    return NextResponse.json({
-      pixels: pixels || [],
-    })
+    return NextResponse.json({ pixels: pixels || [] })
   } catch (error) {
-    console.error('[Pixels API] GET error:', error)
-    return NextResponse.json({
-      pixels: [],
-      debug: { error: String(error) }
-    })
+    console.error('Pixels GET error:', error)
+    return NextResponse.json({ pixels: [] })
   }
 }
