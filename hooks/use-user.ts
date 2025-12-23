@@ -81,6 +81,7 @@ export function useUser() {
     try {
       // Get Facebook cookies for attribution tracking
       const { fbc, fbp } = getFacebookCookies()
+      console.log('[useUser] Creating profile with fbc/fbp:', { fbc, fbp, userId })
 
       const response = await fetch('/api/profile/create', {
         method: 'POST',
@@ -90,11 +91,15 @@ export function useUser() {
         body: JSON.stringify({ fbc, fbp }),
       })
 
+      console.log('[useUser] Profile create response status:', response.status)
+
       if (!response.ok) {
+        console.error('[useUser] Profile create failed:', response.status)
         return null
       }
 
       const { profile } = await response.json()
+      console.log('[useUser] Profile created/updated:', { hasFbc: !!profile?.fbc, hasFbp: !!profile?.fbp })
 
       if (profile) {
         return profile as Profile
@@ -102,6 +107,7 @@ export function useUser() {
 
       return null
     } catch (err) {
+      console.error('[useUser] Profile create error:', err)
       return null
     }
   }, [getFacebookCookies])
