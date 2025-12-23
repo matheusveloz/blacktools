@@ -16,8 +16,9 @@ export async function POST(request: NextRequest) {
       const body = await request.json()
       fbc = body.fbc || null
       fbp = body.fbp || null
+      console.log('[Profile Create] Received fbc/fbp:', { fbc, fbp })
     } catch {
-      // Body might be empty, that's ok
+      console.log('[Profile Create] No body or empty body')
     }
 
     // Check authentication
@@ -57,15 +58,29 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (existingProfile) {
+      console.log('[Profile Create] Profile exists, checking fbc/fbp update:', {
+        hasFbc: !!fbc,
+        hasFbp: !!fbp,
+        existingFbc: existingProfile.fbc,
+        existingFbp: existingProfile.fbp
+      })
+
       // Profile exists - update fbc/fbp if we have new values and profile doesn't have them
       if ((fbc || fbp) && (!existingProfile.fbc || !existingProfile.fbp)) {
-        await adminClient
+        console.log('[Profile Create] Updating fbc/fbp...')
+        const { error: updateError } = await adminClient
           .from('profiles')
           .update({
             fbc: fbc || existingProfile.fbc,
             fbp: fbp || existingProfile.fbp,
           })
           .eq('id', user.id)
+
+        if (updateError) {
+          console.error('[Profile Create] Update error:', updateError)
+        } else {
+          console.log('[Profile Create] fbc/fbp updated successfully')
+        }
       }
 
       const { data: profile } = await adminClient
