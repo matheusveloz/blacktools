@@ -186,7 +186,33 @@ export function useUser() {
           return await createProfileIfNotExists(userId)
         }
 
-        return data as Profile
+        // If profile exists but doesn't have fbc/fbp, try to update them
+        const profile = data as Profile
+        if (!profile.fbc || !profile.fbp) {
+          const { fbc, fbp } = getFacebookCookies()
+          if (fbc || fbp) {
+            console.log('[useUser] Profile exists without fbc/fbp, updating...', { fbc, fbp })
+            // Call API to update fbc/fbp
+            try {
+              const response = await fetch('/api/profile/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fbc, fbp }),
+              })
+              if (response.ok) {
+                const { profile: updatedProfile } = await response.json()
+                console.log('[useUser] fbc/fbp updated:', { hasFbc: !!updatedProfile?.fbc, hasFbp: !!updatedProfile?.fbp })
+                if (updatedProfile) {
+                  return updatedProfile as Profile
+                }
+              }
+            } catch (err) {
+              console.error('[useUser] Failed to update fbc/fbp:', err)
+            }
+          }
+        }
+
+        return profile
       })()
 
       // Race between query and timeout
